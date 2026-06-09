@@ -1,6 +1,6 @@
 model:
   name: dualtrack_loc_enc_stg2
-  backbone_weights: "???" # Set to the best checkpoint output by stage1, e.g., stage1_log_dir/checkpoints/best.pt
+  backbone_weights: "/home/syahid/github/DualTrack/experiments/local_s1/checkpoint/best.pt" # Set to the best checkpoint output by stage1, e.g., stage1_log_dir/checkpoints/best.pt
   freeze_backbone: True
   
 data:

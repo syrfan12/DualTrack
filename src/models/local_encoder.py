@@ -195,12 +195,10 @@ class FeatureExtractorWithSpatialSelfAttentionV1(
 
         if self.backbone_features_key is not None:
             backbone_features = batch[self.backbone_features_key].to(self.device)
-            frames = None
+            return self(backbone_features)
         else:
             frames = batch["images"].to(self.device)
-            backbone_features = None
-
-        return self(frames, backbone_features)
+            return self(frames)
 
 
 @register_model
