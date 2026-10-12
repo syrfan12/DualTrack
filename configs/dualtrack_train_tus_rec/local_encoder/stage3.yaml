@@ -1,10 +1,16 @@
 model:
-  name: dualtrack_loc_enc_stg3_legacy
+  name: dualtrack_loc_enc_stg3 # Must use the same small-window CNN as stage2.
+  load_kw:
+    strict: true
+    handle_size_mismatch: false
   backbone_cfg:
     max_subsequence_size: 1024
+    load_kw:
+      strict: true
+      handle_size_mismatch: false
   max_position_embeddings: 4096
   freeze_backbone: true
-  use_cache: true
+  use_cache: false
   backbone_weights: "/home/syahid/github/DualTrack/experiments/local_s2/checkpoint/best.pt" # Set to the best checkpoint output by stage2, e.g., stage2_log_dir/checkpoints/best.pt
 
 data:
@@ -31,4 +37,4 @@ evaluator_kw:
   include_images: true
 
 debug: false
-resume: false
+no_resume: true

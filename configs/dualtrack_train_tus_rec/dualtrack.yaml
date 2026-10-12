@@ -1,13 +1,23 @@
 model: 
   name: dualtrack_fusion_model
+  load_kw:
+    strict: true
+    handle_size_mismatch: false
   global_encoder_cfg: 
     name: global_encoder_cnn # reflect the choice of model used in the global encoder
-    checkpoint: "???" # Set to the best checkpoint output by global encoder, e.g., global_encoder_log_dir/checkpoints/best.pt
+    checkpoint: "/home/syahid/github/DualTrack/experiments/global_origin/checkpoint/best.pt" # Set to the best checkpoint output by global encoder, e.g., global_encoder_log_dir/checkpoints/best.pt
+    load_kw:
+      strict: true
+      handle_size_mismatch: false
   local_encoder_cfg: 
-    name: dualtrack_loc_enc_stg3_legacy
-    checkpoint: "???" # Set to the best checkpoint output by local encoder stage3, e.g., stage3_log_dir/checkpoints/best.pt
+    name: dualtrack_loc_enc_stg3 # Matches the CNN used by local_s1 and local_s2.
+    checkpoint: "/home/syahid/github/DualTrack/experiments/local_s3/checkpoint/best.pt"
+    max_position_embeddings: 4096 # Must match stage3's learned relative embeddings.
     freeze_backbone: true
-    use_cache: true
+    use_cache: false
+    load_kw:
+      strict: true
+      handle_size_mismatch: false
 
 data: 
   dataset: tus-rec
@@ -20,7 +30,7 @@ data:
   local_encoder_preprocessing_kw: 
     resize_to: [256, 256]
   use_augmentations: false
-  load_preprocessed_images_from_disk: true
+  load_preprocessed_images_from_disk: false
   batch_size: 1
   subsequence_length_train: null
   
@@ -42,4 +52,4 @@ evaluator_kw:
   include_images: true
 
 debug: false
-resume: false
+no_resume: true

@@ -122,8 +122,25 @@ def load_model_weights(model, path_or_state, strict=True, handle_size_mismatch=T
             k[len(state_dict_prefix):]: v for k, v in state.items() if k.startswith(state_dict_prefix)
         }
 
-    if handle_size_mismatch: 
-        model_state = model.state_dict()
+    model_state = model.state_dict()
+    source = path_or_state if isinstance(path_or_state, str) else "provided state dict"
+    source_unexpected_keys = sorted(set(state) - set(model_state))
+    source_missing_keys = sorted(set(model_state) - set(state))
+    shape_mismatches = {
+        k: (tuple(state[k].shape), tuple(model_state[k].shape))
+        for k in sorted(set(state) & set(model_state))
+        if state[k].shape != model_state[k].shape
+    }
+    logging.info(
+        "Checkpoint load audit for %s: source_missing=%d, source_unexpected=%d, shape_mismatches=%d",
+        source, len(source_missing_keys), len(source_unexpected_keys), len(shape_mismatches),
+    )
+    if source_unexpected_keys:
+        logging.warning("Checkpoint source unexpected keys: %s", source_unexpected_keys)
+    if shape_mismatches:
+        logging.warning("Checkpoint shape mismatches (source, model): %s", shape_mismatches)
+
+    if handle_size_mismatch:
         filtered_state_dict = {
             k: v for k, v in state.items()
             if k in model_state and v.size() == model_state[k].size()
@@ -131,6 +148,12 @@ def load_model_weights(model, path_or_state, strict=True, handle_size_mismatch=T
         state = filtered_state_dict
 
     out = model.load_state_dict(state, strict=strict)
+    log_result = logging.warning if out.missing_keys or out.unexpected_keys else logging.info
+    log_result(
+        "Checkpoint load result for %s: missing=%d %s, unexpected=%d %s",
+        source, len(out.missing_keys), out.missing_keys,
+        len(out.unexpected_keys), out.unexpected_keys,
+    )
 
     return out
 

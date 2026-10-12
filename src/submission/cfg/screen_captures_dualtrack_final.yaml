@@ -6,6 +6,10 @@ model_cfg:
 preprocessing:
   name: glob_loc
   run_preprocessing_on_compute_device: true
+  enable_fan_mask: true
+  fan_mask_center_xy: [0.5, 0.02]
+  fan_mask_radius_range: [0.05, 0.95]
+  fan_mask_angle_range_deg: [-35.0, 35.0]
 
 device: cuda
 precision: fp16

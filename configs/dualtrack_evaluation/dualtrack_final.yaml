@@ -23,7 +23,7 @@ train:
   val_every: 10
 
 seed: 0
-log_dir: /home/syahid/github/DualTrack/experiments/eval/dualtrack_final_val
+log_dir: /home/syahid/github/DualTrack/experiments/eval/dualtrack_final_val_new
 device: cuda
 use_amp: true
 

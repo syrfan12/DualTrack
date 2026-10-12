@@ -76,8 +76,45 @@ class ImageProcessing(BaseImagePreprocessing, name="default"):
 
 class LocalAndContextImagesPreprocessing(BaseImagePreprocessing, name="glob_loc"):
 
-    def __init__(self, run_preprocessing_on_compute_device=False):
+    def __init__(
+        self,
+        run_preprocessing_on_compute_device=False,
+        enable_fan_mask=False,
+        fan_mask_center_xy=(0.5, 0.02),
+        fan_mask_radius_range=(0.05, 0.95),
+        fan_mask_angle_range_deg=(-35.0, 35.0),
+    ):
         self.run_preprocessing_on_compute_device = run_preprocessing_on_compute_device
+        self.enable_fan_mask = enable_fan_mask
+        self.fan_mask_center_xy = fan_mask_center_xy
+        self.fan_mask_radius_range = fan_mask_radius_range
+        self.fan_mask_angle_range_deg = fan_mask_angle_range_deg
+
+    def _build_fan_mask(self, H, W, device):
+        ys = torch.arange(H, device=device, dtype=torch.float32)
+        xs = torch.arange(W, device=device, dtype=torch.float32)
+        yy, xx = torch.meshgrid(ys, xs, indexing="ij")
+
+        cx = float(self.fan_mask_center_xy[0]) * (W - 1)
+        cy = float(self.fan_mask_center_xy[1]) * (H - 1)
+
+        dx = xx - cx
+        dy = yy - cy
+
+        # Angle definition: 0 deg points downward, +/- values spread left/right.
+        angle_deg = torch.rad2deg(torch.atan2(dx, dy + 1e-8))
+
+        radius = torch.sqrt(dx * dx + dy * dy)
+        radius_ref = float(min(H, W))
+        rmin = float(self.fan_mask_radius_range[0]) * radius_ref
+        rmax = float(self.fan_mask_radius_range[1]) * radius_ref
+
+        amin = float(self.fan_mask_angle_range_deg[0])
+        amax = float(self.fan_mask_angle_range_deg[1])
+
+        in_radius = (radius >= rmin) & (radius <= rmax)
+        in_angle = (angle_deg >= amin) & (angle_deg <= amax)
+        return (in_radius & in_angle).float()
 
     def __call__(self, image_array, device):
         from torchvision import transforms as T
@@ -85,6 +122,12 @@ class LocalAndContextImagesPreprocessing(BaseImagePreprocessing, name="glob_loc"
         tensor = torch.tensor(image_array) / 255
         if self.run_preprocessing_on_compute_device:
             tensor = tensor.to(device, non_blocking=True)
+
+        if self.enable_fan_mask:
+            fan_mask = self._build_fan_mask(
+                tensor.shape[-2], tensor.shape[-1], tensor.device
+            )
+            tensor = tensor * fan_mask[None, :, :]
 
         images_for_features = tensor.clone()
         images = tensor.clone()
