@@ -42,8 +42,8 @@ def main() -> None:
     parser.add_argument("--output_dir", required=True, help="Where to write output .h5 and metadata.csv")
     parser.add_argument("--sweep_id", default="screen-captures", help="Sweep ID name")
     parser.add_argument("--split", default="val", help="Dataset split label")
-    parser.add_argument("--spacing_x", type=float, default=0.22938919, help="Pixel spacing in mm (x)")
-    parser.add_argument("--spacing_y", type=float, default=0.22097969, help="Pixel spacing in mm (y)")
+    parser.add_argument("--spacing_x", type=float, default=0.037, help="Pixel spacing in mm (x)")
+    parser.add_argument("--spacing_y", type=float, default=0.037, help="Pixel spacing in mm (y)")
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)

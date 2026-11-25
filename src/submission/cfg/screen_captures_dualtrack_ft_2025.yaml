@@ -1,0 +1,16 @@
+model_cfg:
+  name: dualtrack_tus_rec_2024
+  pretrained: false
+  checkpoint: /home/syahid/github/DualTrack/dualtrack_ft_tus_rec_2025_v3_best.pt
+
+preprocessing:
+  name: glob_loc
+  run_preprocessing_on_compute_device: true
+  enable_fan_mask: true
+  fan_mask_center_xy: [0.5, 0.02]
+  fan_mask_radius_range: [0.05, 0.95]
+  fan_mask_angle_range_deg: [-35.0, 35.0]
+
+device: cuda
+precision: fp16
+expected_raw_image_size_hw: [750, 1030]

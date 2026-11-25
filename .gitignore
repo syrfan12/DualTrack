@@ -27,3 +27,4 @@ wandb/
 *.pt
 *.pth
 experiment/
+reports/
