@@ -51,6 +51,7 @@ nest_asyncio==1.6.0
 networkx==3.5
 numpy==2.2.2
 omegaconf==2.3.0
+opencv-python>=4.8,<5
 packaging==25.0
 pandas==2.2.3
 parso==0.8.4

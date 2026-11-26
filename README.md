@@ -194,6 +194,12 @@ DUALTRACK_FINAL_CHECKPOINT_PATH=/path/to/dualtrack_final/ python evaluate.py -c 
 
 DualTrack adapts readily to new datasets through finetuning. For example, see [configs/tus_rec_challenge_2025](configs/tus_rec_challenge_2025) which configures a sequence of finetuning experiments to adapt the original DualTrack model to the TUS-REC 2025 challenge winning model! In [configs/tus_rec_challenge_2025/stg0.yaml](configs/tus_rec_challenge_2025/stg0.yaml), we've highlighted some relevant config flags and their purpose.
 
+For original-resolution MDPI JPGs, the dedicated [MDPI fusion fine-tuning guide](docs/mdpi_original_finetuning.md)
+covers dataset preparation, frozen local/global encoders, fusion + 2D translation
+head training, validation trajectories, and explicit test evaluation. Start with
+`python scripts/finetune_mdpi_fusion.py --check-only --check-weights`;
+`--train` explicitly starts optimization.
+
 ## Baselines 
 
 We reproduced the following baselines for tracking estimation:
